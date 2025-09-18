@@ -19,7 +19,7 @@ composer.use(async (hil, next) => {
   if (hil.text === "/start") {
     await hil.reply("Welcome to Triestor 🚀");
   } else if (hil.text) {
-    await hil.reply(`You said: ${hil.text}`);
+    await hil.reply(`${hil.text}`);
   }
   await next();
 });
