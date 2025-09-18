@@ -11,16 +11,16 @@ const bot = new Triestor(BOT_TOKEN);
 
 const composer = new Composer();
 
-composer.use(async (ctx, next) => {
-  console.log("Received message:", ctx.text);
+composer.use(async (hil, next) => {
+  console.log("Received message:", hil.text);
   await next();
 });
 
-composer.use(async (ctx, next) => {
-  if (ctx.text === "/start") {
-    await ctx.reply("Welcome to Triestor 🚀");
-  } else if (ctx.text) {
-    await ctx.reply(`You said: ${ctx.text}`);
+composer.use(async (hil, next) => {
+  if (hil.text === "/start") {
+    await hil.reply("Welcome to Triestor 🚀");
+  } else if (hil.text) {
+    await hil.reply(`You said: ${hil.text}`);
   }
   await next();
 });
@@ -32,9 +32,9 @@ async function main() {
     const updates = await bot.getUpdates(offset);
 
     for (const update of updates) {
-      const ctx = new Context(update, bot);
+      const hil = new Context(update, bot);
 
-      await composer.execute(ctx);
+      await composer.execute(hil);
 
       offset = update.update_id + 1;
     }
