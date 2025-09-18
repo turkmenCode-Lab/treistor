@@ -1,6 +1,6 @@
 import { Triestor } from "./triestor";
 
-export class Context {
+export class Hil {
   private update: any;
   private api: Triestor;
 

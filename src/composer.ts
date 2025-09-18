@@ -1,4 +1,4 @@
-import { Context } from "./context";
+import { Context } from "./hil";
 
 export type Middleware = (ctx: Context, next: () => Promise<void>) => any;
 

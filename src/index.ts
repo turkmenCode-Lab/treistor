@@ -1,7 +1,7 @@
 import "dotenv/config";
 
 import { Triestor } from "./triestor";
-import { Context } from "./context";
+import { Context } from "./hil";
 import { Composer } from "./composer";
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
