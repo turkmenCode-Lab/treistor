@@ -19,7 +19,12 @@ bot.command("start", async (hil) => {
     .row()
     .text("Option 3")
     .resized();
-  await hil.reply("Welcome to Triestor 🚀", { reply_markup: keyboard });
+  try {
+    await hil.reply("Welcome to Triestor 🚀", { reply_markup: keyboard });
+  } catch (err) {
+    console.error("Failed to send reply with keyboard:", err);
+    await hil.reply("Welcome to Triestor 🚀");
+  }
 });
 
 bot.command("photo", async (hil) => {

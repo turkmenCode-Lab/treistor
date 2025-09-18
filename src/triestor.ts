@@ -3,22 +3,21 @@ import { Composer, HilMiddleware } from "./composer";
 
 export class Keyboard {
   private markup: any = {
-    keyboard: [],
+    keyboard: [[]],
     resize_keyboard: false,
     one_time_keyboard: false,
   };
 
   text(text: string) {
-    const lastRow = this.markup.keyboard[this.markup.keyboard.length - 1] || [];
+    const lastRow = this.markup.keyboard[this.markup.keyboard.length - 1];
     lastRow.push({ text });
-    if (lastRow.length === 1) {
-      this.markup.keyboard.push(lastRow);
-    }
     return this;
   }
 
   row() {
-    this.markup.keyboard.push([]);
+    if (this.markup.keyboard[this.markup.keyboard.length - 1].length > 0) {
+      this.markup.keyboard.push([]);
+    }
     return this;
   }
 
@@ -33,40 +32,56 @@ export class Keyboard {
   }
 
   toJSON() {
-    return { reply_markup: this.markup };
+    // Filter out empty rows to prevent invalid keyboard structure
+    const keyboard = this.markup.keyboard.filter(
+      (row: any[]) => row.length > 0
+    );
+    if (keyboard.length === 0) {
+      console.warn("Keyboard is empty, returning undefined reply_markup");
+      return undefined;
+    }
+    return { reply_markup: { ...this.markup, keyboard } };
   }
 }
 
 export class InlineKeyboard {
-  private markup: any = { inline_keyboard: [] };
+  private markup: any = { inline_keyboard: [[]] };
 
   text(text: string, callbackData: string) {
     const lastRow =
-      this.markup.inline_keyboard[this.markup.inline_keyboard.length - 1] || [];
+      this.markup.inline_keyboard[this.markup.inline_keyboard.length - 1];
     lastRow.push({ text, callback_data: callbackData });
-    if (lastRow.length === 1) {
-      this.markup.inline_keyboard.push(lastRow);
-    }
     return this;
   }
 
   row() {
-    this.markup.inline_keyboard.push([]);
+    if (
+      this.markup.inline_keyboard[this.markup.inline_keyboard.length - 1]
+        .length > 0
+    ) {
+      this.markup.inline_keyboard.push([]);
+    }
     return this;
   }
 
   url(text: string, url: string) {
     const lastRow =
-      this.markup.inline_keyboard[this.markup.inline_keyboard.length - 1] || [];
+      this.markup.inline_keyboard[this.markup.inline_keyboard.length - 1];
     lastRow.push({ text, url });
-    if (lastRow.length === 1) {
-      this.markup.inline_keyboard.push(lastRow);
-    }
     return this;
   }
 
   toJSON() {
-    return { reply_markup: this.markup };
+    const inline_keyboard = this.markup.inline_keyboard.filter(
+      (row: any[]) => row.length > 0
+    );
+    if (inline_keyboard.length === 0) {
+      console.warn(
+        "Inline keyboard is empty, returning undefined reply_markup"
+      );
+      return undefined;
+    }
+    return { reply_markup: { ...this.markup, inline_keyboard } };
   }
 }
 
@@ -106,6 +121,7 @@ export class Triestor extends Composer {
       headers = { "Content-Type": "application/json" };
     }
 
+    console.log(`Sending API request: ${method}`, params);
     const res = await fetch(url, {
       method: "POST",
       headers,
