@@ -22,4 +22,12 @@ export class TriestorAPI {
     if (!data.ok) throw new Error(data.description);
     return data.result;
   }
+
+  async sendMessage(chatId: number | string, text: string) {
+    return this.call("sendMessage", { chat_id: chatId, text });
+  }
+
+  async getUpdates(offset?: number, timeout = 30) {
+    return this.call("getUpdates", { offset, timeout });
+  }
 }
