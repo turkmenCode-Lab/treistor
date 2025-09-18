@@ -1,6 +1,6 @@
-import { Triestor } from "./triestor";
 import { Composer, HilMiddleware } from "./composer";
 import { Hil } from "./hil";
+import { Triestor } from "./triestor";
 
 export class Bot extends Composer {
   private api: Triestor;
@@ -27,9 +27,39 @@ export class Bot extends Composer {
           offset = update.update_id + 1;
         }
       } catch (err) {
-        console.error("Error in polling loop:", err);
+        console.error("Polling error:", err);
         await new Promise((res) => setTimeout(res, 1000));
       }
     }
+  }
+
+  command(cmd: string, handler: HilMiddleware) {
+    this.use(async (hil, next) => {
+      if (hil.text === `/${cmd}`) {
+        await handler(hil, next);
+      } else {
+        await next();
+      }
+    });
+  }
+
+  hears(pattern: RegExp, handler: HilMiddleware) {
+    this.use(async (hil, next) => {
+      if (hil.text && pattern.test(hil.text)) {
+        await handler(hil, next);
+      } else {
+        await next();
+      }
+    });
+  }
+
+  on(type: "message" | string, handler: HilMiddleware) {
+    this.use(async (hil, next) => {
+      if (type === "message" && hil.text) {
+        await handler(hil, next);
+      } else {
+        await next();
+      }
+    });
   }
 }
