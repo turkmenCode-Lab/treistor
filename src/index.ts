@@ -1,14 +1,13 @@
 import "dotenv/config";
 
 import { Triestor } from "./triestor";
-import { Context } from "./hil";
+import { Hil } from "./hil";
 import { Composer } from "./composer";
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
 if (!BOT_TOKEN) throw new Error("BOT_TOKEN is missing");
 
 const bot = new Triestor(BOT_TOKEN);
-
 const composer = new Composer();
 
 composer.use(async (hil, next) => {
@@ -32,10 +31,8 @@ async function main() {
     const updates = await bot.getUpdates(offset);
 
     for (const update of updates) {
-      const hil = new Context(update, bot);
-
+      const hil = new Hil(update, bot);
       await composer.execute(hil);
-
       offset = update.update_id + 1;
     }
   }
