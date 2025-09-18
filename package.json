@@ -4,10 +4,9 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
+    "dev": "nodemon --watch src --exec ts-node src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts",
-    "watch": "ts-node-dev --respawn --transpile-only src/index.ts"
+    "start": "node dist/index.js"
   },
   "dependencies": {
     "node-fetch": "^3.3.2"
