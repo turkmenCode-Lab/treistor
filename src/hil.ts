@@ -13,6 +13,18 @@ export class Hil {
     return this.update?.message?.chat?.id;
   }
 
+  get username(): string | undefined {
+    return this.update?.message?.chat?.username;
+  }
+
+  get first_name(): string | undefined {
+    return this.update?.message?.chat?.first_name;
+  }
+
+  get last_name(): string | undefined {
+    return this.update?.message?.chat?.first_name;
+  }
+
   get text(): string | undefined {
     return this.update?.message?.text;
   }

@@ -12,7 +12,7 @@ bot.on("message", async (hil, next) => {
 });
 
 bot.command("start", async (hil) => {
-  await hil.reply("Welcome to Triestor 🚀");
+  await hil.reply(`Hello 👋🏻, dear ${hil.username}  Welcome to Triestor 🚀`);
 });
 
 bot.hears(/hello/i, async (hil) => {
