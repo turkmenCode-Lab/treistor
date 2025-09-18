@@ -1,6 +1,8 @@
 import { Triestor } from "./triestor";
 
-const bot = new Triestor("YOUR_BOT_TOKEN_HERE");
+const BOT_TOKEN: string = process.env.BOT_TOKEN;
+
+const bot = new Triestor(BOT_TOKEN);
 
 async function main() {
   const updates = await bot.getUpdates();
