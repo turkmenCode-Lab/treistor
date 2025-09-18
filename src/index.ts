@@ -1,4 +1,4 @@
-import { TriestorAPI } from "./triestor";
+import { Triestor } from "./triestor";
 
 const bot = new Triestor("YOUR_BOT_TOKEN_HERE");
 
