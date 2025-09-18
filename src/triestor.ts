@@ -206,7 +206,12 @@ export class Triestor extends Composer {
         );
 
         for (const update of updates.result || updates) {
-          const hil = new Hil(update, this);
+          const text = update.message?.text;
+          const modifiedText =
+            text && text.startsWith("/")
+              ? text.split(" ").slice(1).join(" ")
+              : text;
+          const hil = new Hil(update, this, modifiedText);
           await this.execute(hil);
           offset = update.update_id + 1;
         }
@@ -220,9 +225,7 @@ export class Triestor extends Composer {
   command(cmd: string, handler: HilMiddleware) {
     this.use(async (hil, next) => {
       const text = hil.text;
-      if (text && text.startsWith(`/${cmd}`)) {
-        const parts = text.split(" ");
-        hil.text = parts.slice(1).join(" ");
+      if (text && hil.message?.text?.startsWith(`/${cmd}`)) {
         await handler(hil, next);
         return;
       }
@@ -250,8 +253,7 @@ export class Triestor extends Composer {
     handler: HilMiddleware
   ) {
     this.use(async (hil, next) => {
-      const hasType = hil.update[type];
-      if (hasType) await handler(hil, next);
+      if (hil[type as keyof Hil]) await handler(hil, next);
       else await next();
     });
   }

@@ -3,10 +3,12 @@ import { Triestor } from "./triestor";
 export class Hil {
   private update: any;
   private api: Triestor;
+  private _text: string | undefined;
 
-  constructor(update: any, api: Triestor) {
+  constructor(update: any, api: Triestor, text?: string) {
     this.update = update;
     this.api = api;
+    this._text = text ?? update?.message?.text;
   }
 
   get update_id(): number {
@@ -46,7 +48,11 @@ export class Hil {
   }
 
   get text(): string | undefined {
-    return this.message?.text;
+    return this._text;
+  }
+
+  set text(value: string | undefined) {
+    this._text = value;
   }
 
   get caption(): string | undefined {
