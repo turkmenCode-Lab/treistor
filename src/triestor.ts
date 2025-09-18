@@ -1,4 +1,9 @@
 export class TriestorAPI {
-  private token: String;
-  private apiUrl: String;
+  private token: string;
+  private apiUrl: string;
+
+  constructor(token: string) {
+    this.token = token;
+    this.apiUrl = `https://api.telegram.org/bot${token}`;
+  }
 }
