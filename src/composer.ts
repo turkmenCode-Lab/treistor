@@ -1,19 +1,19 @@
-import { Context } from "./hil";
+import { Hil } from "./hil";
 
-export type Middleware = (ctx: Context, next: () => Promise<void>) => any;
+export type HilMiddleware = (hil: Hil, next: () => Promise<void>) => any;
 
 export class Composer {
-  private middlewares: Middleware[] = [];
+  private middlewares: HilMiddleware[] = [];
 
-  use(mw: Middleware) {
+  use(mw: HilMiddleware) {
     this.middlewares.push(mw);
   }
 
-  async execute(ctx: Context) {
+  async execute(hil: Hil) {
     const runner = async (index: number): Promise<void> => {
       if (index < this.middlewares.length) {
         const mw = this.middlewares[index];
-        await mw(ctx, () => runner(index + 1));
+        await mw(hil, () => runner(index + 1));
       }
     };
 
