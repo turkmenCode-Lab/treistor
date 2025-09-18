@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import { Triestor } from "./triestor";
 import { Context } from "./context";
 
