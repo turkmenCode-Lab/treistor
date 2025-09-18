@@ -1,4 +1,4 @@
-import { Hil, HilMiddleware } from "./hil";
+import { Hil } from "./hil";
 
 export type HilMiddleware = (hil: Hil, next: () => Promise<void>) => any;
 
@@ -10,13 +10,13 @@ export class Composer {
   }
 
   async execute(hil: Hil) {
-    let index = 0;
-    const runner = async () => {
+    const runner = async (index: number): Promise<void> => {
       if (index < this.middlewares.length) {
-        const mw = this.middlewares[index++];
-        await mw(hil, runner);
+        const mw = this.middlewares[index];
+        await mw(hil, () => runner(index + 1));
       }
     };
-    await runner();
+
+    await runner(0);
   }
 }

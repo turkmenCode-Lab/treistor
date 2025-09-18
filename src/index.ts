@@ -1,26 +1,39 @@
 import "dotenv/config";
-import { Triestor } from "./triestor";
-import { Hil } from "./hil";
+import { Triestor, Keyboard } from "./triestor";
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
 if (!BOT_TOKEN) throw new Error("BOT_TOKEN is missing");
 
 const bot = new Triestor(BOT_TOKEN);
 
-bot.on("message", async (hil: Hil) => {
-  console.log("Message received:", hil.text);
+bot.on("message", async (hil, next) => {
+  console.log("Message received:", hil.message?.text || hil.message?.caption);
+  await next();
 });
 
-bot.command("start", async (hil: Hil) => {
-  await hil.reply("Welcome to Triestor 🚀");
+bot.command("start", async (hil) => {
+  const keyboard = new Keyboard()
+    .text("Option 1")
+    .text("Option 2")
+    .row()
+    .text("Option 3")
+    .resized();
+  await hil.reply("Welcome to Triestor 🚀", { reply_markup: keyboard });
 });
 
-bot.hears(/hello/i, async (hil: Hil) => {
+bot.command("photo", async (hil) => {
+  await hil.replyWithPhoto("https://example.com/photo.jpg", {
+    caption: "A photo!",
+  });
+});
+
+bot.hears(/hello/i, async (hil) => {
   await hil.reply("Hi there!");
 });
 
-bot.on("callback_query", async (hil: Hil) => {
-  await hil.answerCbQuery({ text: "Button clicked!" });
+bot.on("callback_query", async (hil) => {
+  await hil.answerCallbackQuery("Clicked!");
+  await hil.editMessageText("Updated text!");
 });
 
 bot.launch();
