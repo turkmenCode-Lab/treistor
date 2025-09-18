@@ -10,13 +10,13 @@ export class Composer {
   }
 
   async execute(hil: Hil) {
+    console.log("Executing middleware chain for update:", hil.update_id);
     const runner = async (index: number): Promise<void> => {
       if (index < this.middlewares.length) {
         const mw = this.middlewares[index];
         await mw(hil, () => runner(index + 1));
       }
     };
-
     await runner(0);
   }
 }

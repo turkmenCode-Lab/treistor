@@ -92,7 +92,7 @@ export class Triestor extends Composer {
       (v) =>
         v instanceof File ||
         (typeof v === "string" &&
-          v.startsWith("http") === false &&
+          !v.startsWith("http") &&
           !v.startsWith("attach://"))
     );
     if (hasFile) {
@@ -101,10 +101,9 @@ export class Triestor extends Composer {
         form.append(key, value as any);
       }
       body = form;
-      headers = { ...headers, "Content-Type": "multipart/form-data" };
     } else {
       body = JSON.stringify(params);
-      headers = { ...headers, "Content-Type": "application/json" };
+      headers = { "Content-Type": "application/json" };
     }
 
     const res = await fetch(url, {
@@ -114,7 +113,10 @@ export class Triestor extends Composer {
     });
 
     const data = await res.json();
-    if (!data.ok) throw new Error(data.description);
+    if (!data.ok) {
+      console.error(`API error in ${method}:`, data.description);
+      throw new Error(data.description);
+    }
     return data.result;
   }
 
@@ -206,11 +208,16 @@ export class Triestor extends Composer {
         );
 
         for (const update of updates.result || updates) {
-          const text = update.message?.text;
-          const modifiedText =
-            text && text.startsWith("/")
-              ? text.split(" ").slice(1).join(" ")
-              : text;
+          const rawText = update.message?.text;
+          const isCommand = rawText?.startsWith("/");
+          const modifiedText = isCommand
+            ? rawText.split(" ").slice(1).join(" ")
+            : rawText;
+          console.log("Processing update:", {
+            update_id: update.update_id,
+            rawText,
+            modifiedText,
+          });
           const hil = new Hil(update, this, modifiedText);
           await this.execute(hil);
           offset = update.update_id + 1;
@@ -224,8 +231,10 @@ export class Triestor extends Composer {
 
   command(cmd: string, handler: HilMiddleware) {
     this.use(async (hil, next) => {
-      const text = hil.text;
-      if (text && hil.message?.text?.startsWith(`/${cmd}`)) {
+      const rawText = hil.message?.text;
+      console.log("Checking command:", { cmd, rawText });
+      if (rawText && rawText.startsWith(`/${cmd}`)) {
+        console.log(`Command /${cmd} matched`);
         await handler(hil, next);
         return;
       }
@@ -238,8 +247,12 @@ export class Triestor extends Composer {
       typeof pattern === "string" ? new RegExp(pattern, "i") : pattern;
     this.use(async (hil, next) => {
       const text = hil.text || hil.caption;
-      if (text && regex.test(text)) await handler(hil, next);
-      else await next();
+      if (text && regex.test(text)) {
+        console.log(`Hears pattern matched: ${text}`);
+        await handler(hil, next);
+      } else {
+        await next();
+      }
     });
   }
 
@@ -253,8 +266,12 @@ export class Triestor extends Composer {
     handler: HilMiddleware
   ) {
     this.use(async (hil, next) => {
-      if (hil[type as keyof Hil]) await handler(hil, next);
-      else await next();
+      if (hil[type as keyof Hil]) {
+        console.log(`Event ${type} triggered`);
+        await handler(hil, next);
+      } else {
+        await next();
+      }
     });
   }
 }

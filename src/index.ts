@@ -12,6 +12,7 @@ bot.on("message", async (hil, next) => {
 });
 
 bot.command("start", async (hil) => {
+  console.log("Start command triggered for chat:", hil.chatId);
   const keyboard = new Keyboard()
     .text("Option 1")
     .text("Option 2")
@@ -22,16 +23,19 @@ bot.command("start", async (hil) => {
 });
 
 bot.command("photo", async (hil) => {
+  console.log("Photo command triggered");
   await hil.replyWithPhoto("https://example.com/photo.jpg", {
     caption: "A photo!",
   });
 });
 
 bot.hears(/hello/i, async (hil) => {
+  console.log("Hears 'hello' triggered");
   await hil.reply("Hi there!");
 });
 
 bot.on("callback_query", async (hil) => {
+  console.log("Callback query received:", hil.data);
   await hil.answerCallbackQuery("Clicked!");
   await hil.editMessageText("Updated text!");
 });
