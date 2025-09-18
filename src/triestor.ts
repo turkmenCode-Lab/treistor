@@ -1,4 +1,4 @@
-export class TriestorAPI {
+export class Triestor {
   private token: string;
   private apiUrl: string;
 
